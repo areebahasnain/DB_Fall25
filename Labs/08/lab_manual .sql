@@ -265,3 +265,80 @@ WHERE  e.salary > 5000;
 
 SELECT * FROM complex_emp_dept_view;
 
+--- Functions : total salary of a department
+CREATE OR REPLACE FUNCTION CalculateSAL (p_dept_id IN NUMBER)
+RETURN NUMBER
+IS
+  v_total_salary NUMBER;
+BEGIN
+  SELECT SUM(salary)
+  INTO   v_total_salary
+  FROM   employees
+  WHERE  department_id = p_dept_id;
+
+  RETURN v_total_salary;
+END;
+/
+
+SELECT CalculateSAL(80) AS dept_80_total_salary FROM dual;
+
+--- Procedure (Insert into LOCATIONS)
+SET SERVEROUTPUT ON;
+
+CREATE OR REPLACE PROCEDURE Insert_Data(
+  p_street_address IN VARCHAR2,
+  p_postal_code    IN VARCHAR2 DEFAULT NULL,
+  p_city           IN VARCHAR2,
+  p_state_province IN VARCHAR2,
+  p_country_id     IN CHAR
+)
+IS
+  v_total_records INT;
+  v_location_id   NUMBER;
+BEGIN
+  SELECT NVL(MAX(location_id), 0)
+  INTO   v_location_id
+  FROM   locations;
+
+  v_location_id := v_location_id + 1;
+  v_total_records := v_location_id;
+
+  INSERT INTO locations (location_id, street_address, postal_code, city, state_province, country_id)
+  VALUES (v_location_id, p_street_address, p_postal_code, p_city, p_state_province, p_country_id);
+
+  dbms_output.put_line('NEW RECORD INSERTED WITH ID: ' || v_location_id);
+  dbms_output.put_line('TOTAL NO OF RECORDS (approx): ' || v_total_records);
+END;
+/
+
+EXEC Insert_Data('DHA', '1234', 'KARACHI', 'SINDH', 'PK');
+
+-- Explicit Cursor
+SET SERVEROUTPUT ON;
+
+DECLARE
+  CURSOR cursor_emp IS
+    SELECT employee_id, first_name, phone_number, salary
+    FROM   employees
+    ORDER  BY salary DESC;
+
+  v_row cursor_emp%ROWTYPE;
+BEGIN
+  OPEN cursor_emp;
+
+  LOOP
+    FETCH cursor_emp INTO v_row;
+    EXIT WHEN cursor_emp%NOTFOUND;
+
+    dbms_output.put_line(
+      'EMPLOYEE ID: '      || v_row.employee_id ||
+      ', NAME: '           || v_row.first_name ||
+      ', CONTACT: '        || v_row.phone_number ||
+      ', SALARY: '         || v_row.salary
+    );
+  END LOOP;
+
+  CLOSE cursor_emp;
+END;
+/
+
