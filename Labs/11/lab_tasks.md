@@ -16,21 +16,27 @@ db.createCollection("Courses")
 <img width="1602" height="256" alt="image" src="https://github.com/user-attachments/assets/c3118747-c08d-4ef6-9173-541d25ae88a8" />
 
 5. Use findOne to retrieve:
-a) Students with math >= 80 AND science < 90 
+a) Students with math >= 80 AND science < 90
+
 <img width="491" height="602" alt="image" src="https://github.com/user-attachments/assets/d5c38875-4620-49b6-be4d-19cda15225ab" />
 
 b) Course where studentsEnrolled includes 3 AND instructor = "Dr. Adams"
+
 <img width="398" height="482" alt="image" src="https://github.com/user-attachments/assets/16ba810b-2b6d-42df-be14-c497a3540523" />
 
 6. Use find to retrieve:
 a) Students with math >= 80 AND science < 90
+
 <img width="567" height="597" alt="image" src="https://github.com/user-attachments/assets/3acc3e5d-07db-47b9-80d2-94b40f2b1611" />
 
 b) Students whose age < 23 OR math >= 85
+
 <img width="673" height="178" alt="image" src="https://github.com/user-attachments/assets/7c89553f-4a14-41ab-872b-6955890a0a73" />
+
 <img width="521" height="812" alt="image" src="https://github.com/user-attachments/assets/3fec47cf-d215-43f0-99d1-21d7bd7319d6" />
 
 c) Students with science >= 80 AND (math < 75 OR age > 22)
+
 <img width="687" height="201" alt="image" src="https://github.com/user-attachments/assets/a8da01b1-ebc5-4692-90fc-9d1778d43693" />
 
 7. Use updateOne to increase Bob’s science score where math >= 75
