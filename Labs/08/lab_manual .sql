@@ -108,3 +108,160 @@ BEGIN
   END IF;
 END;
 /
+
+-- CASE on department_id
+SET SERVEROUTPUT ON;
+
+DECLARE
+  v_emp_id employees.employee_id%TYPE := 100;
+  v_sal    employees.salary%TYPE;
+  v_dept   employees.department_id%TYPE;
+BEGIN
+  SELECT salary, department_id
+  INTO   v_sal, v_dept
+  FROM   employees
+  WHERE  employee_id = v_emp_id;
+
+  CASE v_dept
+    WHEN 80 THEN
+      UPDATE employees SET salary = v_sal + 100 WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 80: +100');
+    WHEN 50 THEN
+      UPDATE employees SET salary = v_sal + 200 WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 50: +200');
+    WHEN 40 THEN
+      UPDATE employees SET salary = v_sal + 300 WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 40: +300');
+    ELSE
+      dbms_output.put_line('No raise rule for this department.');
+  END CASE;
+END;
+/
+
+-- CASE on department_id (compact + cleaner)
+--- But it DOES NOT allow dbms_output.put_line, because it’s a value expression, not a block.
+DECLARE
+    v_emp_id employees.employee_id%TYPE := 100;
+    v_sal    employees.salary%TYPE;
+    v_dept   employees.department_id%TYPE;
+BEGIN
+    SELECT salary, department_id
+    INTO   v_sal, v_dept
+    FROM   employees
+    WHERE  employee_id = v_emp_id;
+
+    UPDATE employees
+    SET salary = CASE 
+        WHEN v_dept = 80 THEN v_sal + 100
+        WHEN v_dept = 50 THEN v_sal + 200
+        WHEN v_dept = 40 THEN v_sal + 300
+        ELSE v_sal
+    END
+    WHERE employee_id = v_emp_id;
+END;
+/
+    
+--- Searched CASE (conditions in WHEN)
+DECLARE
+  v_emp_id employees.employee_id%TYPE := 100;
+  v_sal    employees.salary%TYPE;
+  v_dept   employees.department_id%TYPE;
+BEGIN
+  SELECT salary, department_id
+  INTO   v_sal, v_dept
+  FROM   employees
+  WHERE  employee_id = v_emp_id;
+
+  CASE
+    WHEN v_dept = 80 AND v_sal < 20000 THEN
+      UPDATE employees SET salary = v_sal + 150 WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 80 & low salary: +150');
+    WHEN v_dept = 50 THEN
+      UPDATE employees SET salary = v_sal + 100 WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 50: +100');
+    ELSE
+      dbms_output.put_line('No CASE condition matched');
+  END CASE;
+END;
+/
+
+--- NESTED IF
+DECLARE
+  v_emp_id employees.employee_id%TYPE := 100;
+  v_sal    employees.salary%TYPE;
+  v_dept   employees.department_id%TYPE;
+  v_comm   employees.commission_pct%TYPE;
+BEGIN
+  SELECT salary, department_id, commission_pct
+  INTO   v_sal, v_dept, v_comm
+  FROM   employees
+  WHERE  employee_id = v_emp_id;
+
+  IF v_dept = 90 THEN
+    IF v_sal BETWEEN 20000 AND 25000 THEN
+      UPDATE employees
+      SET salary = (v_sal + 100) * (1 + NVL(v_comm,0))
+      WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 90, high salary band');
+    ELSIF v_sal BETWEEN 15000 AND 20000 THEN
+      UPDATE employees
+      SET salary = (v_sal + 200) * (1 + NVL(v_comm,0))
+      WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 90, mid salary band');
+    END IF;
+  ELSIF v_dept = 40 THEN
+    IF v_sal BETWEEN 10000 AND 15000 THEN
+      UPDATE employees
+      SET salary = (v_sal + 100) * (1 + NVL(v_comm,0))
+      WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 40, high salary band');
+    ELSIF v_sal BETWEEN 5000 AND 10000 THEN
+      UPDATE employees
+      SET salary = (v_sal + 200) * (1 + NVL(v_comm,0))
+      WHERE employee_id = v_emp_id;
+      dbms_output.put_line('Dept 40, mid salary band');
+    END IF;
+  ELSE
+    dbms_output.put_line('No nested rule for this department.');
+  END IF;
+END;
+/
+
+--- LOOPS
+DECLARE
+BEGIN
+  FOR c IN (
+    SELECT employee_id, first_name, salary
+    FROM   employees
+    WHERE  department_id = 90
+  )
+  LOOP
+    dbms_output.put_line(
+      'Salary for employee ' || c.first_name ||
+      ' (ID ' || c.employee_id || ') is: ' || c.salary
+    );
+  END LOOP;
+END;
+/
+
+--- VIEW
+CREATE OR REPLACE VIEW simple_employee_view AS
+SELECT employee_id, first_name, last_name, email, salary
+FROM   employees
+WHERE  department_id = 80;
+
+SELECT * FROM simple_employee_view;
+
+--- Complex VIEW with JOIN
+CREATE OR REPLACE VIEW complex_emp_dept_view AS
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       d.department_name,
+       e.salary
+FROM   employees e
+       JOIN departments d ON e.department_id = d.department_id
+WHERE  e.salary > 5000;
+
+SELECT * FROM complex_emp_dept_view;
+
