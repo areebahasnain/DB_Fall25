@@ -10,7 +10,7 @@ for each row
 begin
   :new.name := upper(:new.name);
 end;
-/ --
+/ 
 
 insert into students values (1, 'areeba hasnain');
 
@@ -29,7 +29,7 @@ begin
     raise_application_error(-20001, 'Deletion blocked: Weekend restrictions apply');
   end if;
 end;
-/ --
+/ 
 
 insert into employees values (1, 'emp a', 100000);
 
@@ -59,7 +59,7 @@ begin
   insert into log_salary_audit
   values (log_salary_audit_seq.nextval, :old.id, :old.salary, :new.salary, sysdate);
 end;
-/
+/ 
 
 insert into employees values (1, 'emp b', 20000);
 update employees set salary = 25000 where id = 1;
@@ -79,7 +79,7 @@ begin
     raise_application_error(-20002, 'Error: Product price cannot be negative');
   end if;
 end;
-/
+/ 
 
 insert into products values (1, 'p1', 100);
 update products set price = 200 where id = 1;
@@ -99,7 +99,7 @@ begin
   :new.created_by := user;
   :new.created_at := sysdate;
 end;
-/
+/ 
 
 insert into courses (id, name) values (1, 'math');
 
@@ -118,7 +118,7 @@ begin
     :new.department_id := 10;
   end if;
 end;
-/
+/ 
 
 insert into emp (id, name) values (1, 'e1');
 
@@ -149,7 +149,7 @@ compound trigger
   end after statement;
 
 end trg_sales_calc_totals;
-/
+/ 
 
 insert into sales values (1, 120);
 
@@ -176,7 +176,7 @@ begin
     sysdate
   );
 end;
-/
+/ 
 
 create table ddl_test (x int);
 drop table ddl_test;
@@ -195,7 +195,7 @@ begin
     raise_application_error(-20003, 'Update blocked: Order already shipped');
   end if;
 end;
-/
+/ 
 
 insert into orders values (1, 'SHIPPED');
 update orders set order_status = 'PENDING' where id = 1;
@@ -219,5 +219,4 @@ begin
     sysdate
   );
 end;
-
-/
+/ 
