@@ -10,7 +10,7 @@ for each row
 begin
   :new.name := upper(:new.name);
 end;
-/
+/ --
 
 insert into students values (1, 'areeba hasnain');
 
@@ -29,7 +29,7 @@ begin
     raise_application_error(-20001, 'Deletion blocked: Weekend restrictions apply');
   end if;
 end;
-/
+/ --
 
 insert into employees values (1, 'emp a', 100000);
 
@@ -219,4 +219,5 @@ begin
     sysdate
   );
 end;
+
 /
